@@ -3,9 +3,9 @@ module;
 #include <variant>
 #include <vector>
 #include <unordered_map>
-export module ast.package_decl;
+export module ast:package_decl;
 
-import ast.using_decl;
+import :using_decl;
 
 export namespace ast{
 struct package_decl {

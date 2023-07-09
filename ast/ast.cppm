@@ -1,4 +1,4 @@
 export module ast;
 
-export import ast.package_decl;
-export import ast.using_decl;
+export import :package_decl;
+export import :using_decl;

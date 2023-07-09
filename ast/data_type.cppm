@@ -1,6 +1,6 @@
 module;
 #include <memory>
-export module ast.data_type;
+export module ast:data_type;
 
 export namespace ast {
 enum class data_type {

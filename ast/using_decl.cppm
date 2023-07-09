@@ -1,6 +1,6 @@
 module;
 #include <string>
-export module ast.using_decl;
+export module ast:using_decl;
 
 export namespace ast {
 struct using_decl {

@@ -1,10 +1,10 @@
 module;
 #include <memory>
 #include <variant>
-export module ast.type_info;
+export module ast:type_info;
 
-import ast.package_decl;
-import ast.data_type;
+import :package_decl;
+import :data_type;
 
 export namespace ast {
 

@@ -2,9 +2,9 @@ module;
 #include <memory>
 #include <string>
 #include <vector>
-export module ast.protocol_decl;
+export module ast:protocol_decl;
 
-import ast.package_decl;
+import :package_decl;
 
 export namespace ast {
 struct protocol_decl {
