@@ -8,16 +8,36 @@ set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(ABSL_PROPAGATE_CXX_STD ON)
+set(ABSL_ENABLE_INSTALL ON)
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_TESTING OFF)
+
 Include(FetchContent)
 
 FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v3.0.1 # or a later release
+        GIT_TAG        v3.0.1
+)
+
+FetchContent_Declare(
+        absl
+        GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+        GIT_TAG        lts_2023_01_25
+)
+
+FetchContent_Declare(
+        re2
+        GIT_REPOSITORY https://github.com/google/re2.git
+        GIT_TAG        2023-07-01
 )
 
 FetchContent_MakeAvailable(Catch2)
+FetchContent_MakeAvailable(absl)
+FetchContent_MakeAvailable(re2)
 
 add_subdirectory(ast)
+add_subdirectory(cst)
 add_subdirectory(parser)
 add_subdirectory(test)

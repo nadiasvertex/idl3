@@ -5,8 +5,10 @@ export module ast:type_info;
 
 import :package_decl;
 import :data_type;
+import :protocol_decl;
 
 export namespace ast {
+
 
 struct type_reference {
   data_type kind;
