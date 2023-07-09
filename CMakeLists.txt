@@ -18,4 +18,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+add_subdirectory(ast)
 add_subdirectory(parser)
+add_subdirectory(test)

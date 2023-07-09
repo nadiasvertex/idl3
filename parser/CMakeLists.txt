@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(parser VERSION "${CMAKE_PROJECT_VERSION}" LANGUAGES CXX)
 
-add_subdirectory(test)
-
 add_library(parser )
 target_sources(parser
         PUBLIC
