@@ -64,29 +64,29 @@ struct kw_pattern {
    * @param kw the keyword end state
    */
   void add_alternative(std::u8string_view pattern, keyword_type kw) {
-    auto &ps = patterns;
+    auto *ps = &patterns;
     for (const auto &c : pattern) {
-      auto pos = std::ranges::find_if(ps, [&c](kw_pattern_state &state) {
+      auto pos = std::ranges::find_if(*ps, [&c](kw_pattern_state &state) {
         return state.value.has_value() && state.value == c;
       });
 
       // If 'c' doesn't exist in the state vector, add it and move down that
       // subtree.
-      if (pos == ps.end()) {
-        ps.emplace_back(c);
-        ps = ps.back().next_states;
+      if (pos == ps->end()) {
+        ps->emplace_back(c);
+        ps = &(ps->back().next_states);
       } else {
-        ps = pos->next_states;
+        ps = &(pos->next_states);
       }
     }
 
-    ps.emplace_back(std::nullopt, kw);
+    ps->emplace_back(std::nullopt, kw);
   }
 
   /**
    * match tries to match 'data' in the pattern tree and if successful indicates
    * how much data was consumed and which keyword was found. On a failed match
-   * it returns nothing.
+   * it returns nothing. This function matches all options in parallel.
    *
    * @param data the data to search.
    * @return a count of consumed data and the keyword found on success, or
@@ -94,24 +94,38 @@ struct kw_pattern {
    */
   [[nodiscard]] auto match(std::u8string_view data) const
       -> std::optional<std::tuple<size_type, keyword_type>> {
-    auto ps = std::cref(patterns);
+    bool match_failed = false;
+    const auto *ps = &patterns;
     std::vector<std::tuple<size_type, keyword_type>> matches;
     for (std::string_view::size_type index = 0; index < data.size(); ++index) {
       auto pos = std::ranges::find_if(
-          ps.get(), [c = data[index]](const kw_pattern_state &state) {
+          *ps, [c = data[index]](const kw_pattern_state &state) {
             return state.value.has_value() && state.value == c;
           });
 
-      if (pos == ps.get().end()) {
+      if (pos == ps->end()) {
+        match_failed = true;
         break;
       } else {
-        ps = pos->next_states;
         if (pos->keyword) {
           matches.emplace_back(index, *pos->keyword);
         }
+        ps = &(pos->next_states);
       }
     }
 
+    // If we reached the end of the input without failing, we need to see if
+    // there is an end state in the pattern tree at this node.
+    if (!match_failed) {
+      if (auto pos = std::ranges::find_if(
+          *ps, [](const kw_pattern_state &state) {
+            return !state.value.has_value() && state.keyword.has_value();
+          }); pos!=ps->end()) {
+        matches.emplace_back(data.size(), pos->keyword.value());
+      }
+    }
+
+    // Determine if we found a match.
     if (!matches.empty()) {
       return matches.back();
     } else {
@@ -149,20 +163,22 @@ export struct keyword_decl {
  * parse_keyword attempts to parse a keyword out of data.
  *
  * @param data the data stream to parse
- * @return a view of the unconsumed data and a keyword declaration on sucess, or nothing on failure.
+ * @return a view of the unconsumed data and a keyword declaration on success, or
+ * nothing on failure.
  */
-export auto parse_keyword(std::u8string_view data)
-    -> std::optional<std::tuple<std::u8string_view, keyword_decl>> {
+export auto parse_keyword(position &p)
+    -> std::optional<keyword_decl> {
   const auto &kws = get_pattern_matcher();
-  const auto result = kws.match(data);
+  const auto result = kws.match(p.data);
 
   if (!result) {
     return std::nullopt;
   }
 
   const auto &[consumed_chars, kw] = *result;
-  data.remove_prefix(consumed_chars);
-  return std::make_tuple(data, keyword_decl{kw});
+  p.data.remove_prefix(consumed_chars);
+  p.column += consumed_chars;
+  return keyword_decl{kw};
 }
 
 } // namespace cst

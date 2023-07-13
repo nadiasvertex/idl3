@@ -6,3 +6,4 @@ export module cst;
 
 export import :position;
 export import :keyword;
+export import :whitespace;

@@ -16,12 +16,12 @@ export namespace cst {
      * line is the line number in the file where the position is located,
      * starting with 1.
      */
-    std::uint32_t line;
+    std::uint32_t line=1;
 
     /**
      * column is the column number where the position is located, starting with 1.
      */
-    std::uint32_t column;
+    std::uint32_t column=1;
 
     /**
      * data is the span of original data where the position occurs.

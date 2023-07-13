@@ -11,4 +11,5 @@ target_sources(
         position.cppm
         keyword.cppm
         scanner.cppm
+        whitespace.cppm
 )

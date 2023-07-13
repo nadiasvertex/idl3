@@ -31,5 +31,6 @@
 *.out
 *.app
 
+compile_commands.json
 cmake-build-debug-llvm-16
 .idea
