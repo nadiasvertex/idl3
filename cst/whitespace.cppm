@@ -26,6 +26,10 @@ export struct whitespace_decl {
  * or nothing on failure.
  */
 export auto parse_whitespace(position &p) -> std::optional<whitespace_decl> {
+  if (p.current_data.empty()) {
+    return std::nullopt;
+  }
+
   for (auto index = 0U; index < p.current_data.size(); ++index) {
     switch (p.current_data[index]) {
     case ' ':
@@ -40,13 +44,9 @@ export auto parse_whitespace(position &p) -> std::optional<whitespace_decl> {
       p.column = 1;
       break;
     default:
-      if (index == 0) {
-        return std::nullopt;
-      } else {
         auto decl = whitespace_decl{p.current_data.substr(0, index)};
         p.current_data.remove_prefix(index);
         return decl;
-      }
     }
   }
 

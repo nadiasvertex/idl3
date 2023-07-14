@@ -168,6 +168,10 @@ export struct keyword_decl {
  */
 export auto parse_keyword(position &p)
     -> std::optional<keyword_decl> {
+  if (p.current_data.empty()) {
+    return std::nullopt;
+  }
+
   const auto &kws = get_pattern_matcher();
   const auto result = kws.match(p.current_data);
 

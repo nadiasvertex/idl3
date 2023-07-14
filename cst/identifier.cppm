@@ -27,6 +27,10 @@ export struct identifier_decl {
  * or nothing on failure.
  */
 export auto parse_identifier(position &p) -> std::optional<identifier_decl> {
+  if (p.current_data.empty()) {
+    return std::nullopt;
+  }
+
   bool has_alpha=false;
   for (auto index = 0U; index < p.current_data.size(); ++index) {
     auto c = p.current_data[index];
