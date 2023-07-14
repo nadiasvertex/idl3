@@ -27,23 +27,23 @@ export enum class keyword_type {
   with_kw
 };
 
-std::vector<std::tuple<std::u8string_view, keyword_type>> kw_map = {
-    {u8"abstract", keyword_type::abstract_kw},
-    {u8"const", keyword_type::const_kw},
-    {u8"enum", keyword_type::enum_kw},
-    {u8"import", keyword_type::import_kw},
-    {u8"message", keyword_type::message_kw},
-    {u8"operation", keyword_type::operation_kw},
-    {u8"package", keyword_type::package_kw},
-    {u8"protocol", keyword_type::protocol_kw},
-    {u8"splice", keyword_type::splice_kw},
-    {u8"template", keyword_type::template_kw},
-    {u8"type", keyword_type::type_kw},
-    {u8"using", keyword_type::using_kw},
-    {u8"with", keyword_type::with_kw}};
+std::vector<std::tuple<std::string_view, keyword_type>> kw_map = {
+    {"abstract", keyword_type::abstract_kw},
+    {"const", keyword_type::const_kw},
+    {"enum", keyword_type::enum_kw},
+    {"import", keyword_type::import_kw},
+    {"message", keyword_type::message_kw},
+    {"operation", keyword_type::operation_kw},
+    {"package", keyword_type::package_kw},
+    {"protocol", keyword_type::protocol_kw},
+    {"splice", keyword_type::splice_kw},
+    {"template", keyword_type::template_kw},
+    {"type", keyword_type::type_kw},
+    {"using", keyword_type::using_kw},
+    {"with", keyword_type::with_kw}};
 
 struct kw_pattern_state {
-  std::optional<std::u8string::value_type> value;
+  std::optional<std::string::value_type> value;
   std::optional<keyword_type> keyword;
   std::vector<kw_pattern_state> next_states;
 };
@@ -53,7 +53,7 @@ struct kw_pattern_state {
  * and query the pattern states.
  */
 struct kw_pattern {
-  using size_type = std::u8string_view::size_type;
+  using size_type = std::string_view::size_type;
   std::vector<kw_pattern_state> patterns;
 
   /**
@@ -63,7 +63,7 @@ struct kw_pattern {
    * @param pattern the pattern to add
    * @param kw the keyword end state
    */
-  void add_alternative(std::u8string_view pattern, keyword_type kw) {
+  void add_alternative(std::string_view pattern, keyword_type kw) {
     auto *ps = &patterns;
     for (const auto &c : pattern) {
       auto pos = std::ranges::find_if(*ps, [&c](kw_pattern_state &state) {
@@ -92,7 +92,7 @@ struct kw_pattern {
    * @return a count of consumed data and the keyword found on success, or
    * nothing.
    */
-  [[nodiscard]] auto match(std::u8string_view data) const
+  [[nodiscard]] auto match(std::string_view data) const
       -> std::optional<std::tuple<size_type, keyword_type>> {
     bool match_failed = false;
     const auto *ps = &patterns;
@@ -169,15 +169,16 @@ export struct keyword_decl {
 export auto parse_keyword(position &p)
     -> std::optional<keyword_decl> {
   const auto &kws = get_pattern_matcher();
-  const auto result = kws.match(p.data);
+  const auto result = kws.match(p.current_data);
 
   if (!result) {
     return std::nullopt;
   }
 
   const auto &[consumed_chars, kw] = *result;
-  p.data.remove_prefix(consumed_chars);
+  p.current_data.remove_prefix(consumed_chars);
   p.column += consumed_chars;
+  p.offset += consumed_chars;
   return keyword_decl{kw};
 }
 

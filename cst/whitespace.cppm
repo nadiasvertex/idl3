@@ -15,7 +15,7 @@ namespace cst {
  * whitespace_decl contains
  */
 export struct whitespace_decl {
-  std::u8string_view value;
+  std::string_view value;
 };
 
 /**
@@ -26,26 +26,32 @@ export struct whitespace_decl {
  * or nothing on failure.
  */
 export auto parse_whitespace(position &p) -> std::optional<whitespace_decl> {
-  for (auto index = 0U; index < p.data.size(); ++index) {
-    switch (p.data[index]) {
+  for (auto index = 0U; index < p.current_data.size(); ++index) {
+    switch (p.current_data[index]) {
     case ' ':
     case '\t':
     case '\r':
+      p.offset++;
       p.column++;
       break;
     case '\n':
+      p.offset++;
       p.line++;
       p.column = 1;
       break;
     default:
-      auto decl = whitespace_decl{p.data.substr(0, index)};
-      p.data.remove_prefix(index);
-      return decl;
+      if (index == 0) {
+        return std::nullopt;
+      } else {
+        auto decl = whitespace_decl{p.current_data.substr(0, index)};
+        p.current_data.remove_prefix(index);
+        return decl;
+      }
     }
   }
 
-  auto decl = whitespace_decl(p.data);
-  p.data.remove_prefix(p.data.size());
+  auto decl = whitespace_decl(p.current_data);
+  p.current_data.remove_prefix(p.current_data.size());
   return decl;
 }
 

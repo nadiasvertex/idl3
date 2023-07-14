@@ -13,9 +13,9 @@ export namespace ast{
 using package_member = std::variant<using_decl, protocol_decl>;
 
 struct package_decl {
-  std::u8string name;
+  std::string name;
 
   std::vector<using_decl> aliases;
-  std::unordered_map<std::u8string, std::u8string> alias_map;
+  std::unordered_map<std::string, std::string> alias_map;
 };
 }

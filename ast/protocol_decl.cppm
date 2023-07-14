@@ -6,7 +6,7 @@ export module ast:protocol_decl;
 
 export namespace ast {
 struct protocol_decl {
-  std::u8string name;
+  std::string name;
 
   bool abstract;
   // std::vector<method_decl> methods;

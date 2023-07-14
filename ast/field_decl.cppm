@@ -13,13 +13,13 @@ struct field_decl {
   /**
    * name is the name of the field.
    */
-  std::u8string name;
+  std::string name;
 
   /**
    * type contains information about the type of the field.
    */
   type_descriptor type;
 
-  std::u8string tag;
+  std::string tag;
 };
 }

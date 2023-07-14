@@ -11,7 +11,7 @@ export namespace ast {
  * of IDL these were known as methods or RPCs.
  */
 struct operation_decl {
-  std::u8string name;
+  std::string name;
 
   std::vector<field_decl> inputs;
   std::vector<field_decl> outputs;

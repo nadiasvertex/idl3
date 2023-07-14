@@ -11,14 +11,15 @@ TEST_CASE("can scan keywords") {
 
 tpl = """
 SECTION("{kw}") {{
-    std::u8string_view keyword{{u8"{kw}"}};
-    cst::position p = {{.data=keyword}};
+    std::string_view keyword{{"{kw}"}};
+    cst::position p = {{ .current_data = keyword, .data = keyword}};
     auto r = cst::parse_keyword(p);
     REQUIRE(r);
     const auto &decl = *r;
     CHECK(decl.keyword == cst::keyword_type::{kw}_kw);
-    CHECK(p.data.empty());
+    CHECK(p.current_data.empty());
     CHECK(p.column == keyword.size()+1);
+    CHECK(p.offset == keyword.size());
 }}
 """
 

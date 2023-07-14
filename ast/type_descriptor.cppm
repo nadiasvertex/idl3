@@ -24,6 +24,6 @@ struct type_descriptor {
    * path is the list of names that identify this type name from the root to
    * the most closely nested package.
    */
-  std::vector<std::u8string> path;
+  std::vector<std::string> path;
 };
 }

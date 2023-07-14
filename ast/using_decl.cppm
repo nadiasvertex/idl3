@@ -4,7 +4,7 @@ export module ast:using_decl;
 
 export namespace ast {
 struct using_decl {
-  std::u8string old_name;
-  std::u8string new_name;
+  std::string old_name;
+  std::string new_name;
 };
 }

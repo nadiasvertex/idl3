@@ -6,7 +6,7 @@ import :data_type;
 
 export namespace ast {
   struct primitive_decl {
-    std::u8string name;
+    std::string name;
 
     data_type kind;
   };

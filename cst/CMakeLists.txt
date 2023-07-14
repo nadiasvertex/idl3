@@ -8,8 +8,9 @@ target_sources(
         PUBLIC
         FILE_SET cxx_modules TYPE CXX_MODULES FILES
         cst.cppm
-        position.cppm
+        identifier.cppm
         keyword.cppm
+        position.cppm
         scanner.cppm
         whitespace.cppm
 )

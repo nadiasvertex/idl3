@@ -5,12 +5,12 @@
 
 import cst;
 
-TEST_CASE("can scan whitespace") {
+TEST_CASE("can scan identifier") {
 
-  SECTION("spaces only") {
-    std::string_view data{"     "};
+  SECTION("alpha only") {
+    std::string_view data{"abcde"};
     cst::position p = {.current_data = data, .data = data};
-    auto r = cst::parse_whitespace(p);
+    auto r = cst::parse_identifier(p);
     REQUIRE(r);
     const auto &decl = *r;
     CHECK(decl.value == data);
@@ -18,10 +18,10 @@ TEST_CASE("can scan whitespace") {
     CHECK(p.column == data.size() + 1);
   }
 
-  SECTION("spaces and tabs") {
-    std::string_view data{" \t \t  "};
+  SECTION("alphanumeric") {
+    std::string_view data{"abcdefg12332"};
     cst::position p = {.current_data = data, .data = data};
-    auto r = cst::parse_whitespace(p);
+    auto r = cst::parse_identifier(p);
     REQUIRE(r);
     const auto &decl = *r;
     CHECK(decl.value == data);
@@ -29,10 +29,10 @@ TEST_CASE("can scan whitespace") {
     CHECK(p.column == data.size() + 1);
   }
 
-  SECTION("spaces, tabs, and carriage returns") {
-    std::string_view data{" \t \t \r \r "};
+  SECTION("all legal character kinds") {
+    std::string_view data{"abdf_2321"};
     cst::position p = {.current_data = data, .data = data};
-    auto r = cst::parse_whitespace(p);
+    auto r = cst::parse_identifier(p);
     REQUIRE(r);
     const auto &decl = *r;
     CHECK(decl.value == data);
@@ -40,16 +40,24 @@ TEST_CASE("can scan whitespace") {
     CHECK(p.column == data.size() + 1);
   }
 
-  SECTION("spaces, tabs, carriage returns, and newlines") {
-    std::string_view data{" \t \n \t \r \n \r "};
+  SECTION("can start with underscore") {
+    std::string_view data{"_abdfghij0987654321"};
     cst::position p = {.current_data = data, .data = data};
-    auto r = cst::parse_whitespace(p);
+    auto r = cst::parse_identifier(p);
     REQUIRE(r);
     const auto &decl = *r;
     CHECK(decl.value == data);
     CHECK(p.current_data.empty());
-    CHECK(p.column == 4);
-    CHECK(p.line == 3);
-    CHECK(p.offset == p.data.size());
+    CHECK(p.column == data.size() + 1);
   }
+
+  SECTION("cannot start with number") {
+    std::string_view data{"1abcd"};
+    cst::position p = {.current_data = data, .data = data};
+    auto r = cst::parse_identifier(p);
+    REQUIRE_FALSE(r);
+    CHECK(p.column==1);
+    CHECK(p.offset==0);
+  }
+
 }

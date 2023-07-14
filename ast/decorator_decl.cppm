@@ -8,7 +8,7 @@ import :field_decl;
 export namespace ast {
 
 struct decorator_decl {
-  std::u8string name;
+  std::string name;
   std::vector<field_decl> inputs;
 };
 }
